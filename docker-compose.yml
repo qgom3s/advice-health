@@ -2,7 +2,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+    container_name: todo-backend
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend:/app
@@ -11,30 +11,25 @@ services:
     depends_on:
       - db
     environment:
-      - POSTGRES_DB=advicehealth
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_HOST=db
-      - POSTGRES_PORT=5432
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    command: npm start
-    volumes:
-      - ./frontend:/app
-    ports:
-      - "3000:3000"
+      - DEBUG=True
+      - DB_NAME=todo_db
+      - DB_USER=todo_user
+      - DB_PASSWORD=todo_pass
+      - DB_HOST=db
+      - DB_PORT=5432
 
   db:
     image: postgres:15
+    container_name: todo-postgres
+    restart: always
     environment:
-      POSTGRES_DB: advicehealth
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: todo_db
+      POSTGRES_USER: todo_user
+      POSTGRES_PASSWORD: todo_pass
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
 volumes:
   postgres_data:
