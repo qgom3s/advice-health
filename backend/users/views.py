@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from rest_framework.serializers import ModelSerializer
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserSerializer
+from .serializers import UserSerializer, UserRegisterSerializer
 
 class UserRegisterSerializer(ModelSerializer):
     class Meta:
