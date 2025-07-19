@@ -25,12 +25,13 @@ SECRET_KEY = 'django-insecure-*cqnws7gjqhv7r25zjh%@l)0jnf9hja@_(2-_3jn0ts_ke$qgd
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,9 +41,12 @@ INSTALLED_APPS = [
     'rest_framework',  # Django REST Framework for API development
     'rest_framework.authtoken',  # Token authentication for DRF
     'tasks',  # Custom app for managing tasks
+    'users',  # Custom app for user management
+    'sharing',  # Custom app for sharing tasks
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -133,5 +137,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
 }
+
+CORS_ALLOW_ALL_ORIGINS = True
