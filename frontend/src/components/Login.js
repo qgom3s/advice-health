@@ -14,11 +14,21 @@ export default function Login({ onLoginSuccess }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
+
       if (!res.ok) {
         throw new Error('Login failed!');
       }
+
       const data = await res.json();
-      onLoginSuccess(data.auth_token); // Pass the token to the parent component
+      
+      // Ajuste para pegar o token, que pode estar em "token" ou "auth_token"
+      const token = data.token || data.auth_token;
+
+      if (!token) {
+        throw new Error('Token não recebido.');
+      }
+
+      onLoginSuccess(token); // Passa o token para o componente pai
     } catch (err) {
       setError('Usuário ou senha inválidos... tente novamente.');
     }
@@ -27,7 +37,7 @@ export default function Login({ onLoginSuccess }) {
   return (
     <form onSubmit={handleSubmit}>
       <h2>Login</h2>
-      {error && <p style={{color:'red'}}>{error}</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <input
         type="text"
         placeholder="Usuário"
