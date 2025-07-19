@@ -2,72 +2,140 @@ import React, { useEffect, useState } from 'react';
 
 export default function Dashboard({ token }) {
   const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [newTitle, setNewTitle] = useState('');
   const [error, setError] = useState(null);
 
-  // Buscar as tarefas autenticadas via API
   useEffect(() => {
-    if (!token) return;
-
-    async function fetchTasks() {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const res = await fetch('http://localhost:8000/api/tasks/', {
-          headers: {
-            'Authorization': `Token ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!res.ok) {
-          throw new Error('Erro ao buscar tarefas.');
-        }
-
-        const data = await res.json();
-        setTasks(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
     fetchTasks();
-  }, [token]);
+  }, []);
 
-  // Função para tratar clique no botão de criar tarefa
-  function handleCreateTask() {
-    alert('Aqui você pode implementar a criação de tarefas.');
+  async function fetchTasks() {
+    try {
+      const res = await fetch('http://localhost:8000/api/tasks/', {
+        headers: { Authorization: `Token ${token}` },
+      });
+
+      if (!res.ok) throw new Error('Erro ao buscar tarefas.');
+
+      const data = await res.json();
+      setTasks(data);
+    } catch (err) {
+      setError('Erro ao buscar tarefas.');
+    }
   }
 
-  if (!token) {
-    return <p>Você precisa estar logado para ver as tarefas.</p>;
+  async function createTask(e) {
+    e.preventDefault();
+    setError(null);
+
+    try {
+      const res = await fetch('http://localhost:8000/api/tasks/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify({ title: newTitle }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      const newTask = await res.json();
+      setTasks([...tasks, newTask]);
+      setNewTitle('');
+    } catch {
+      setError('Erro ao criar tarefa.');
+    }
   }
 
-  if (loading) return <p>Carregando tarefas...</p>;
+  async function updateTaskStatus(task) {
+    const updated = { ...task, completed: !task.completed };
 
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
+    try {
+      const res = await fetch(`http://localhost:8000/api/tasks/${task.id}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify({ completed: updated.completed }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      setTasks(prev =>
+        prev.map(t => (t.id === task.id ? updated : t))
+      );
+    } catch {
+      setError('Erro ao atualizar status da tarefa.');
+    }
+  }
+
+  async function deleteTask(id) {
+    try {
+      const res = await fetch(`http://localhost:8000/api/tasks/${id}/`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error();
+
+      setTasks(prev => prev.filter(t => t.id !== id));
+    } catch {
+      setError('Erro ao deletar tarefa.');
+    }
+  }
+
+  const pendingTasks = tasks.filter(t => !t.completed);
+  const completedTasks = tasks.filter(t => t.completed);
 
   return (
     <div>
       <h2>Dashboard</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {tasks.length === 0 ? (
-        <p>
-          Nenhuma tarefa encontrada.{' '}
-          <button onClick={handleCreateTask}>Criar nova tarefa</button>
-        </p>
-      ) : (
-        <ul>
-          {tasks.map((task) => (
-            <li key={task.id}>
-              {task.title} - {task.completed ? 'Concluída' : 'Pendente'}
-            </li>
-          ))}
-        </ul>
-      )}
+      <form onSubmit={createTask}>
+        <input
+          type="text"
+          placeholder="Nova tarefa"
+          value={newTitle}
+          onChange={e => setNewTitle(e.target.value)}
+          required
+        />
+        <button type="submit">Adicionar</button>
+      </form>
+
+      <h3>Tarefas Pendentes</h3>
+      <ul>
+        {pendingTasks.map(task => (
+          <li key={task.id}>
+            <input
+              type="checkbox"
+              checked={false}
+              onChange={() => updateTaskStatus(task)}
+            />
+            {task.title}
+            <button onClick={() => deleteTask(task.id)}>Excluir</button>
+          </li>
+        ))}
+      </ul>
+
+      <h3>Tarefas Concluídas</h3>
+      <ul>
+        {completedTasks.map(task => (
+          <li key={task.id} style={{ textDecoration: 'line-through', color: 'gray' }}>
+            <input
+              type="checkbox"
+              checked={true}
+              onChange={() => updateTaskStatus(task)}
+            />
+            {task.title}
+            <button onClick={() => deleteTask(task.id)}>Excluir</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

@@ -21,14 +21,13 @@ export default function Login({ onLoginSuccess }) {
 
       const data = await res.json();
       
-      // Ajuste para pegar o token, que pode estar em "token" ou "auth_token"
       const token = data.token || data.auth_token;
 
       if (!token) {
         throw new Error('Token não recebido.');
       }
 
-      onLoginSuccess(token); // Passa o token para o componente pai
+      onLoginSuccess(token);
     } catch (err) {
       setError('Usuário ou senha inválidos... tente novamente.');
     }

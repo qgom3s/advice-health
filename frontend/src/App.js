@@ -7,19 +7,16 @@ export default function App() {
   const [token, setToken] = useState(null);
   const [showRegister, setShowRegister] = useState(false);
 
-  // Verifica se tem token salvo no localStorage quando o app carrega
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
     if (storedToken) setToken(storedToken);
   }, []);
 
-  // Função chamada quando o login é bem sucedido (recebe o token)
   function handleLoginSuccess(token) {
     setToken(token);
     localStorage.setItem('authToken', token);
   }
 
-  // Logout: limpa token do estado e localStorage
   function handleLogout() {
     setToken(null);
     localStorage.removeItem('authToken');
@@ -33,14 +30,13 @@ export default function App() {
           <button onClick={handleLogout}>Sair</button>
         </header>
         <main>
-          {/* Passa o token para o Dashboard para que ele faça as requisições autenticadas */}
+          {/* Render the dashboard if the user is logged in */}
           <Dashboard token={token} />
         </main>
       </div>
     );
   }
 
-  // Tela de login / registro
   return (
     <div>
       {showRegister ? (
