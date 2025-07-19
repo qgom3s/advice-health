@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',  # Django REST Framework for API development
     'rest_framework.authtoken',  # Token authentication for DRF
     'tasks',  # Custom app for managing tasks
+    'users',  # Custom app for user management
 ]
 
 MIDDLEWARE = [
