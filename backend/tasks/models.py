@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
-
 # Define the Task model for the tasks app
 # This model will represent a task with fields for title, description, completion status, and timestamps
 class Task(models.Model):
@@ -13,8 +11,6 @@ class Task(models.Model):
     is_completed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
-    shared_with = models.ManyToManyField(User, related_name='shared_tasks', blank=True)
 
     def __str__(self):
         return self.title

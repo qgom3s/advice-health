@@ -23,4 +23,5 @@ urlpatterns = [
     path('api/', include('tasks.urls')),  # Include the tasks app URLs
     path('api/token/', obtain_auth_token),  # Endpoint for obtaining auth tokens
     path('api/users/', include('users.urls')),  # Include the users app URLs
+    path('api/sharing/', include('sharing.urls')),  # Include the sharing app URLs
 ]

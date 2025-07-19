@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',  # Token authentication for DRF
     'tasks',  # Custom app for managing tasks
     'users',  # Custom app for user management
+    'sharing',  # Custom app for sharing tasks
 ]
 
 MIDDLEWARE = [
