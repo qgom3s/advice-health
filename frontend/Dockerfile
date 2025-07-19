@@ -1,11 +1,13 @@
-# Código Dockerfile para a base do frontend - Revisar!
-FROM node:18
+FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package.json package-lock.json* /app/
+COPY package*.json ./
+
 RUN npm install
 
-COPY . /app
+COPY . .
 
 EXPOSE 3000
+
+CMD ["npm", "start"]
